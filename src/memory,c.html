@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Card Game</title>
+
+<style>
+* {
+    margin: 0;
+    padding:  0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    padding: 25px;
+    background: white;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px #0003;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stats div {
+    flex: 1;
+    background: #f0efff;
+    padding: 12px 5px;
+    border-radius: 10px;
+    color: #555;
+    font-weight: bold;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.card {
+    height: 90px;
+    border: none;
+    border-radius: 12px;
+    background: #667eea;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px #0001;
+}
+
+.card:hover {
+    transform: scale(1.04);
+}
+
+.card.matched {
+    background: #20bf6b;
+    cursor: default;
+}
+
+.card:disabled {
+    color: white;
+    opacity: 1;
+}
+
+#message {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #20a05a;
+    min-height: 22px;
+}
+
+#restart {
+    margin-top: 15px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    background: #764ba2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#restart:hover {
+    background: #5b3783;
+}
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.stats div {
+    font-size: 13px;
+}
+
+#player {
+    color: #764ba2;
+}
+@media (max-width: 400px) {
+    .container {
+        padding: 15px;
+    }
+
+    .game {
+        gap: 7px;
+    }
+
+    .card {
+        height: 72px;
+        font-size: 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Memory Game</h1>
+    <p>Find all matching pairs!</p>
+
+    <div class="stats">
+      
+        <div>Matches: <span id="matches">0</span>/8</div>
+    </div>
+
+    <div class="game" id="game"></div>
+
+    <div id="message">Good luck! </div>
+
+     <div class="stats">
+     
+    <div>Player 1: <span id="score1">0</span></div>
+    <div>Turn: <span id="player">Player 1</span></div>
+    <div>Player 2: <span id="score2">0</span></div>
+</div>
+
+<div class="game" id="game"></div>
+
+<button id="restart">Restart Game</button>
+</div>
+
+<script> 
+
+const emojis = [
+    "🍎", "🍌", "🍇", "🍒",
+    "🍕", "🍔", "⚽", "🚗"
+];
+
+const game = document.getElementById("game");
+const message = document.getElementById("message");
+const playerDisplay = document.getElementById("player");
+const score1Display = document.getElementById("score1");
+const score2Display = document.getElementById("score2");
+
+let firstCard = null;
+let secondCard = null;
+let currentPlayer = 1;
+let score1 = 0;
+let score2 = 0;
+let locked = false;
+let gameVersion = 0;
+
+function startGame() {
+    gameVersion++;
+
+    firstCard = null;
+    secondCard = null;
+    currentPlayer = 1;
+    score1 = 0;
+    score2 = 0;
+    locked = false;
+
+    score1Display.textContent = 0;
+    score2Display.textContent = 0;
+    playerDisplay.textContent = "Player 1";
+    message.textContent = "Player 1's turn 🎮";
+    game.innerHTML = "";
+
+    const cards = [...emojis, ...emojis];
+
+    cards.sort(() => Math.random() - 0.5);
+
+    cards.forEach(emoji => {
+        const card = document.createElement("button");
+
+        card.className = "card";
+        card.textContent = "?";
+        card.dataset.emoji = emoji;
+
+        card.addEventListener("click", () => {
+            if (
+                locked ||
+                card.classList.contains("matched") ||
+                card === firstCard
+            ) return;
+
+            card.textContent = emoji;
+
+            if (!firstCard) {
+                firstCard = card;
+                return;
+            }
+
+            secondCard = card;
+            locked = true;
+
+            const version = gameVersion;
+
+            if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+                firstCard.classList.add("matched");
+                secondCard.classList.add("matched");
+
+                firstCard.disabled = true;
+                secondCard.disabled = true;
+
+                if (currentPlayer === 1) {
+                    score1++;
+                    score1Display.textContent = score1;
+                } else {
+                    score2++;
+                    score2Display.textContent = score2;
+                }
+
+                firstCard = null;
+                secondCard = null;
+                locked = false;
+
+                if (score1 + score2 === emojis.length) {
+                    if (score1 > score2) {
+                        message.textContent = "🏆 Player 1 Wins!";
+                    } else if (score2 > score1) {
+                        message.textContent = "🏆 Player 2 Wins!";
+                    } else {
+                        message.textContent = "🤝 It's a Draw!";
+                    }
+                    return;
+                }
+
+                message.textContent =
+                    `Player ${currentPlayer} found a match! Play again.`;
+
+            } else {
+                message.textContent =
+                    `Player ${currentPlayer} missed!`;
+
+                const oldFirst = firstCard;
+                const oldSecond = secondCard;
+
+                setTimeout(() => {
+                    if (version !== gameVersion) return;
+
+                    oldFirst.textContent = "?";
+                    oldSecond.textContent = "?";
+
+                    firstCard = null;
+                    secondCard = null;
+
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+
+                    playerDisplay.textContent = `Player ${currentPlayer}`;
+                    message.textContent =
+                        `Player ${currentPlayer}'s turn `;
+
+                    locked = false;
+                }, 1000);
+            }
+        });
+
+        game.appendChild(card);
+    });
+}
+
+document.getElementById("restart").addEventListener("click", startGame);
+
+startGame();
+
+</script>
+
+</body>
+</html>
