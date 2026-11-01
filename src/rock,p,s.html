@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +30,7 @@
             padding: 35px 25px;
             text-align: center;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255,255,255,.15);
+            border: 1px solid rgba(255, 255, 255, .15);
             border-radius: 20px;
             box-shadow: 0 15px 40px #0004;
         }
@@ -172,8 +172,10 @@
 </head>
 
 <body>
-
     <div class="game">
+        <h1>
+            <a href="./nav.html">Rock</a>
+            </h1>
         <h1>Rock <span>Paper</span> Scissors</h1>
         <p class="subtitle">Choose your move and beat the computer!</p>
 
@@ -182,27 +184,23 @@
                 <p>You</p>
                 <div class="score" id="user-score">0</div>
             </div>
-
             <div class="score-box">
                 <p>Computer</p>
                 <div class="score" id="computer-score">0</div>
             </div>
         </div>
-
         <h3 style="margin-bottom: 18px;">Choose your weapon</h3>
-
         <div class="choices">
             <button class="choice" data-choice="rock" aria-label="Rock">✊</button>
             <button class="choice" data-choice="paper" aria-label="Paper">✋</button>
             <button class="choice" data-choice="scissors" aria-label="Scissors">✌️</button>
         </div>
-
         <div class="result">
             <p id="result-text">Let's Play!</p>
             <p id="details">Make your first move.</p>
         </div>
 
-        <button class="reset" id="reset-btn">↻ Reset Game</button>
+        <button class="reset" id="reset-btn"> Reset Game</button>
     </div>
 
     <script>
@@ -273,4 +271,5 @@
     </script>
 
 </body>
+
 </html>
